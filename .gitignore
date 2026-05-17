@@ -1,6 +1,16 @@
+# 依存関係
 node_modules/
+
+# ビルド・テストの生成物
 dist/
+output/
 .playwright-cli/
-output/playwright/
+.tmp-tests/
 *.tsbuildinfo
+
+# OS が勝手に作るファイル
 .DS_Store
+
+# 参考資料はローカルのみ（README だけ Git に上げる）
+docs/references/*
+!docs/references/README.md

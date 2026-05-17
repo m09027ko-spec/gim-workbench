@@ -1,0 +1,68 @@
+import type { AppCategory } from "../../types/module";
+
+export const categories: AppCategory[] = [
+  {
+    id: "calculations",
+    title: "計算",
+    description: "式が明確な計算ツール",
+    iconLabel: "計",
+    path: "/category/calculations",
+    colorTone: "teal",
+  },
+  {
+    id: "scores",
+    title: "スコア",
+    description: "臨床スコア・リスク層別化",
+    iconLabel: "点",
+    path: "/category/scores",
+    colorTone: "purple",
+  },
+  {
+    id: "medications",
+    title: "薬剤",
+    description: "薬剤確認・安全なTODO雛形",
+    iconLabel: "薬",
+    path: "/category/medications",
+    colorTone: "amber",
+  },
+  {
+    id: "emergency",
+    title: "救急",
+    description: "救急・急変時の初期整理",
+    iconLabel: "救",
+    path: "/category/emergency",
+    colorTone: "red",
+  },
+  {
+    id: "ward",
+    title: "病棟",
+    description: "入院・退院・病棟管理",
+    iconLabel: "病",
+    path: "/category/ward",
+    colorTone: "blue",
+  },
+  {
+    id: "outpatient",
+    title: "外来",
+    description: "外来初期整理・フォロー",
+    iconLabel: "外",
+    path: "/category/outpatient",
+    colorTone: "teal",
+  },
+  {
+    id: "geriatric",
+    title: "高齢者",
+    description: "高齢者診療・せん妄・CGA",
+    iconLabel: "老",
+    path: "/category/geriatric",
+    colorTone: "gray",
+  },
+  {
+    id: "documents",
+    title: "書類・説明",
+    description: "書類、説明、コピー用サマリー",
+    iconLabel: "文",
+    path: "/category/documents",
+    colorTone: "gray",
+  },
+];

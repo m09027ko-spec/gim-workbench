@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "build:portable": "npm run build && node scripts/build-portable.mjs",
     "portable": "node scripts/build-portable.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node scripts/test-calculations.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",

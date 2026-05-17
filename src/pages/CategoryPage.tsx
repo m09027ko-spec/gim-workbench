@@ -54,12 +54,12 @@ export function CategoryPage() {
       <SearchBar
         value={query}
         onChange={setQuery}
-        placeholder={`${category.title}のモジュールを検索`}
+        placeholder={`${category.title}のツールを検索`}
       />
 
       <section className="content-section">
         <div className="section-heading">
-          <h2>モジュール</h2>
+          <h2>ツール</h2>
           <span>{filteredModules.length}件</span>
         </div>
         <div className="card-list">
@@ -73,7 +73,7 @@ export function CategoryPage() {
               />
             ))
           ) : (
-            <EmptyState title="該当するモジュールがありません" />
+              <EmptyState title="該当するツールがありません" />
           )}
         </div>
       </section>

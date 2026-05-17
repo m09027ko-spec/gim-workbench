@@ -1,7 +1,7 @@
 {
   "name": "総診ワークベンチ",
   "short_name": "総診WB",
-  "description": "病棟・外来・救急・教育をつなぐ個人用臨床ワークスペース",
+  "description": "内科臨床で日常的に使える医療者向け軽量ミニツール集",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

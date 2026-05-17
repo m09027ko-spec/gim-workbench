@@ -1,16 +1,9 @@
 import { useMemo, useState } from "react";
-import { CategoryCard } from "../components/CategoryCard";
 import { EmptyState } from "../components/EmptyState";
 import { ModuleCard } from "../components/ModuleCard";
 import { SearchBar } from "../components/SearchBar";
 import { SectionCard } from "../components/SectionCard";
-import {
-  categories,
-  getModuleById,
-  getModulesByCategory,
-  modules,
-  searchModules,
-} from "../data/modules";
+import { categories, getModuleById, modules, searchModules } from "../data/modules";
 import type { AppModule } from "../types/module";
 import { getFavorites, getRecentModules, toggleFavorite } from "../utils/storage";
 
@@ -18,12 +11,27 @@ function isModule(module: AppModule | undefined): module is AppModule {
   return Boolean(module);
 }
 
+function moduleMatchesCategory(module: AppModule, categoryId: string): boolean {
+  return module.categoryIds ? module.categoryIds.includes(categoryId) : module.categoryId === categoryId;
+}
+
 export function HomePage() {
   const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [favorites, setFavorites] = useState<string[]>(() => getFavorites());
   const [recentIds] = useState<string[]>(() => getRecentModules());
 
-  const searchResults = useMemo(() => searchModules(query), [query]);
+  const baseModules = useMemo(
+    () => (query.trim() ? searchModules(query) : modules),
+    [query],
+  );
+  const visibleModules = useMemo(
+    () =>
+      activeCategory === "all"
+        ? baseModules
+        : baseModules.filter((module) => moduleMatchesCategory(module, activeCategory)),
+    [activeCategory, baseModules],
+  );
   const favoriteModules = useMemo(
     () => favorites.map((moduleId) => getModuleById(moduleId)).filter(isModule),
     [favorites],
@@ -42,46 +50,70 @@ export function HomePage() {
       <section className="home-hero">
         <p className="eyebrow">GIM Workbench</p>
         <h1>総診ワークベンチ</h1>
-        <p>病棟・外来・救急・教育をつなぐ個人用臨床ワークスペース</p>
+        <p>計算式・スコア・チェックリストを素早く開く医療者向け補助ツール</p>
       </section>
 
       <SearchBar
         value={query}
         onChange={setQuery}
-        placeholder="モジュールを検索：肺炎、退院、CURB、返書..."
+        placeholder="ツールを検索：Na、DOAC、血液ガス、退院..."
       />
 
-      {query.trim() ? (
-        <section className="content-section">
-          <div className="section-heading">
-            <h2>検索結果</h2>
-            <span>{searchResults.length}件</span>
-          </div>
-          <div className="card-list">
-            {searchResults.length > 0 ? (
-              searchResults.map((module) => (
-                <ModuleCard
-                  key={module.id}
-                  module={module}
-                  isFavorite={favorites.includes(module.id)}
-                  onToggleFavorite={handleToggleFavorite}
-                />
-              ))
-            ) : (
-              <EmptyState
-                title="該当するモジュールがありません"
-                description="別のキーワードで検索してください。"
+      <section className="content-section">
+        <div className="section-heading">
+          <h2>カテゴリ絞り込み</h2>
+          <span>{visibleModules.length}件</span>
+        </div>
+        <div className="filter-chip-row" role="list" aria-label="カテゴリ絞り込み">
+          <button
+            className={`filter-chip${activeCategory === "all" ? " active" : ""}`}
+            type="button"
+            onClick={() => setActiveCategory("all")}
+          >
+            すべて
+          </button>
+          {categories.map((category) => (
+            <button
+              className={`filter-chip${activeCategory === category.id ? " active" : ""}`}
+              key={category.id}
+              type="button"
+              onClick={() => setActiveCategory(category.id)}
+            >
+              {category.title}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="content-section">
+        <div className="section-heading">
+          <h2>ツール一覧</h2>
+          <span>{visibleModules.length}/{modules.length}</span>
+        </div>
+        <div className="card-list">
+          {visibleModules.length > 0 ? (
+            visibleModules.map((module) => (
+              <ModuleCard
+                key={module.id}
+                module={module}
+                isFavorite={favorites.includes(module.id)}
+                onToggleFavorite={handleToggleFavorite}
               />
-            )}
-          </div>
-        </section>
-      ) : null}
+            ))
+          ) : (
+            <EmptyState
+              title="該当するツールがありません"
+              description="検索語またはカテゴリを変更してください。"
+            />
+          )}
+        </div>
+      </section>
 
       <section className="content-section">
         <div className="section-heading">
           <h2>最近使った</h2>
         </div>
-        <div className="card-list">
+        <div className="card-list compact-cards">
           {recentModules.length > 0 ? (
             recentModules.map((module) => (
               <ModuleCard
@@ -92,7 +124,7 @@ export function HomePage() {
               />
             ))
           ) : (
-            <EmptyState title="まだ最近使ったモジュールはありません" />
+            <EmptyState title="まだ最近使ったツールはありません" />
           )}
         </div>
       </section>
@@ -101,7 +133,7 @@ export function HomePage() {
         <div className="section-heading">
           <h2>お気に入り</h2>
         </div>
-        <div className="card-list">
+        <div className="card-list compact-cards">
           {favoriteModules.length > 0 ? (
             favoriteModules.map((module) => (
               <ModuleCard
@@ -112,31 +144,17 @@ export function HomePage() {
               />
             ))
           ) : (
-            <EmptyState title="よく使うモジュールを☆で登録できます" />
+            <EmptyState title="よく使うツールを☆で登録できます" />
           )}
         </div>
       </section>
 
-      <section className="content-section">
-        <div className="section-heading">
-          <h2>カテゴリ</h2>
-          <span>{modules.length}モジュール</span>
-        </div>
-        <div className="category-grid">
-          {categories.map((category) => (
-            <CategoryCard
-              key={category.id}
-              category={category}
-              moduleCount={getModulesByCategory(category.id).length}
-            />
-          ))}
-        </div>
-      </section>
-
-      <SectionCard title="注意" tone="notice">
-        <p className="notice-text">
-          このアプリは診療補助用の個人ツールです。臨床判断は必ず最新のガイドライン、院内ルール、患者背景に基づいて行ってください。患者個人情報は入力しないでください。
-        </p>
+      <SectionCard title="共通注意" tone="notice">
+        <ul className="compact-list">
+          <li>医療者向け補助ツールであり、最終判断は担当医が行う。</li>
+          <li>施設プロトコル・添付文書・最新ガイドラインを優先。</li>
+          <li>未確認データや薬剤量は仮実装せず、TODOとして明示。</li>
+        </ul>
       </SectionCard>
     </div>
   );

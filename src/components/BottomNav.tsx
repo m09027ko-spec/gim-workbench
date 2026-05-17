@@ -2,9 +2,9 @@ import { NavLink } from "react-router-dom";
 
 const navItems = [
   { to: "/", label: "ホーム" },
+  { to: "/category/emergency", label: "救急" },
   { to: "/category/ward", label: "病棟" },
-  { to: "/category/calculators", label: "計算" },
-  { to: "/category/documents", label: "文書" },
+  { to: "/category/medications", label: "薬剤" },
 ];
 
 export function BottomNav() {

@@ -13,6 +13,7 @@ export type AppModule = {
   title: string;
   description: string;
   categoryId: string;
+  categoryIds?: string[];
   categoryTitle: string;
   path: string;
   tags: string[];
