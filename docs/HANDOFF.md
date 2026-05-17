@@ -33,6 +33,7 @@
   - 参考情報・根拠欄
   - 免責表示
 - 単一HTML版 `portable/gim-workbench.html` を再生成済み
+- GitHub Pages更新後の白画面対策として、Service Workerをcache-firstからnetwork-firstへ変更済み
 
 ## 主要ファイル
 
@@ -47,6 +48,7 @@
 | `src/data/doacRules.ts` | DOAC確認TODO |
 | `src/data/antibioticRenalDosing.ts` | 抗菌薬腎機能用量TODO |
 | `src/data/checklistItems.ts` | チェックリスト項目 |
+| `public/sw.js` | GitHub Pages/PWA用Service Worker。更新後の白画面を避けるためnetwork-first |
 | `scripts/test-calculations.mjs` | 計算テスト |
 | `docs/PROJECT_MAP.md` | 現状スナップショット |
 
@@ -71,6 +73,8 @@ npm run build:portable
 ```
 
 上記3つは成功済みです。
+
+2026-05-17追記: `dist` をローカルHTTPサーバーで開き、トップページが白画面にならず30/30ツールを表示することを確認済みです。
 
 ## 再開時の最初の確認
 

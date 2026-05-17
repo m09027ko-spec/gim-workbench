@@ -1,5 +1,15 @@
-const CACHE_NAME = "gim-workbench-v1";
+const CACHE_NAME = "gim-workbench-v2";
 const CORE_ASSETS = ["./", "./manifest.json", "./app-icon.svg"];
+
+const cacheResponse = (request, response) => {
+  if (!response || !response.ok) {
+    return response;
+  }
+
+  const copy = response.clone();
+  caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => undefined);
+  return response;
+};
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -29,19 +39,18 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) {
-        return cached;
-      }
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => cacheResponse("./", response))
+        .catch(() => caches.match("./")),
+    );
+    return;
+  }
 
-      return fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-          return response;
-        })
-        .catch(() => caches.match("./"));
-    }),
+  event.respondWith(
+    fetch(request)
+      .then((response) => cacheResponse(request, response))
+      .catch(() => caches.match(request)),
   );
 });
