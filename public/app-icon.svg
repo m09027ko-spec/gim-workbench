@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="総診ワークベンチ">
+  <rect width="512" height="512" rx="112" fill="#0F766E"/>
+  <rect x="82" y="108" width="348" height="296" rx="42" fill="#FFFFFF"/>
+  <path d="M146 184h220" stroke="#0F766E" stroke-width="30" stroke-linecap="round"/>
+  <path d="M146 256h220" stroke="#E2E8F0" stroke-width="30" stroke-linecap="round"/>
+  <path d="M146 328h136" stroke="#B45309" stroke-width="30" stroke-linecap="round"/>
+  <circle cx="354" cy="328" r="34" fill="#CC0000"/>
+</svg>
