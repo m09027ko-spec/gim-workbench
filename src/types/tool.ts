@@ -40,6 +40,14 @@ export type ToolField =
       label: string;
       options: ToolOption[];
       help?: string;
+    }
+  | {
+      type: "textarea";
+      id: string;
+      label: string;
+      rows?: number;
+      placeholder?: string;
+      help?: string;
     };
 
 export type ChecklistItemDefinition = {

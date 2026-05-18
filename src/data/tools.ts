@@ -32,6 +32,7 @@ import {
   calculateSteroidEquivalent,
   roundTo,
 } from "../utils/calculations";
+import { buildDischargeSummary, buildReferralReply } from "../utils/textTemplates";
 
 const commonReferences = [
   "代表的な臨床スコア・計算式に基づく実装。施設プロトコルと最新ガイドラインで確認してください。",
@@ -1141,6 +1142,90 @@ export const miniToolDefinitions: ToolDefinition[] = [
         details: [thresholdComment, ...(base.details ?? [])],
         interpretation: ["症状、循環動態、活動性出血、心疾患、緩和目的を優先して判断してください。"],
         cautions: ["緩和輸血では患者目標と効果判定を明確にしてください。"],
+      };
+    },
+    referenceInfo: commonReferences,
+  },
+  {
+    id: "discharge-summary",
+    title: "退院サマリ下書き",
+    purpose:
+      "退院サマリの骨子を、要点を埋めるだけで下書きとして生成し、カルテへコピーする。",
+    categoryIds: ["documents", "ward"],
+    tags: ["退院サマリ", "書類", "文書テンプレート"],
+    fields: [
+      { type: "textarea", id: "admissionReason", label: "入院理由", rows: 2, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "primaryDiagnosis", label: "主診断", rows: 2, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "comorbidities", label: "併存疾患", rows: 2, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "hospitalCourse", label: "入院後経過", rows: 4, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "treatments", label: "実施した治療", rows: 3, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "dischargeStatus", label: "退院時状態", rows: 2, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "dischargeMedicationPoints", label: "退院時処方の要点", rows: 2, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "futurePlan", label: "今後の方針", rows: 3, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "requests", label: "外来・かかりつけ医への依頼事項", rows: 3, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "explanation", label: "患者・家族への説明内容", rows: 3, placeholder: "個人情報を含めず、要点のみ入力" },
+    ],
+    calculate(values) {
+      const copyText = buildDischargeSummary({
+        admissionReason: s(values, "admissionReason"),
+        primaryDiagnosis: s(values, "primaryDiagnosis"),
+        comorbidities: s(values, "comorbidities"),
+        hospitalCourse: s(values, "hospitalCourse"),
+        treatments: s(values, "treatments"),
+        dischargeStatus: s(values, "dischargeStatus"),
+        dischargeMedicationPoints: s(values, "dischargeMedicationPoints"),
+        futurePlan: s(values, "futurePlan"),
+        requests: s(values, "requests"),
+        explanation: s(values, "explanation"),
+      });
+      return {
+        title: "退院サマリ下書き",
+        summary: "下書きを生成しました。カルテへコピーしてください。",
+        tone: "neutral",
+        copyText,
+        cautions: [
+          "患者氏名・ID・生年月日・住所・電話番号・カルテ番号などの個人情報は入力しないでください。",
+          "本ツールは下書き支援です。最終的な記載内容と医学的妥当性は担当医が確認してください。",
+        ],
+      };
+    },
+    referenceInfo: commonReferences,
+  },
+  {
+    id: "referral-reply",
+    title: "紹介元返書",
+    purpose:
+      "紹介元医師への返書の骨子を、要点を埋めるだけで生成し、カルテへコピーする。",
+    categoryIds: ["documents", "outpatient"],
+    tags: ["返書", "紹介状", "文書テンプレート"],
+    fields: [
+      { type: "textarea", id: "referralReason", label: "紹介理由", rows: 2, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "assessment", label: "当科での評価", rows: 3, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "diagnosis", label: "診断", rows: 2, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "treatment", label: "治療・対応", rows: 3, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "currentStatus", label: "現在の状態", rows: 2, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "futurePlan", label: "今後の方針", rows: 3, placeholder: "個人情報を含めず、要点のみ入力" },
+      { type: "textarea", id: "requests", label: "紹介元にお願いしたいこと", rows: 3, placeholder: "個人情報を含めず、要点のみ入力" },
+    ],
+    calculate(values) {
+      const copyText = buildReferralReply({
+        referralReason: s(values, "referralReason"),
+        assessment: s(values, "assessment"),
+        diagnosis: s(values, "diagnosis"),
+        treatment: s(values, "treatment"),
+        currentStatus: s(values, "currentStatus"),
+        futurePlan: s(values, "futurePlan"),
+        requests: s(values, "requests"),
+      });
+      return {
+        title: "紹介元返書",
+        summary: "返書案を生成しました。カルテへコピーしてください。",
+        tone: "neutral",
+        copyText,
+        cautions: [
+          "医療機関名・患者個人情報は入力しないでください。冒頭の「〇〇先生」は後でカルテ側で実名に置き換えてください。",
+          "本ツールは下書き支援です。最終的な記載内容と医学的妥当性は担当医が確認してください。",
+        ],
       };
     },
     referenceInfo: commonReferences,

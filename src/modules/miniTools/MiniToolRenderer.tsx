@@ -5,6 +5,7 @@ import { NumberInput } from "../../components/NumberInput";
 import { ResultCard } from "../../components/ResultCard";
 import { SectionCard } from "../../components/SectionCard";
 import { SelectInput } from "../../components/SelectInput";
+import { TextareaInput } from "../../components/TextareaInput";
 import { getToolDefinitionById } from "../../data/tools";
 import type {
   ChecklistGroupDefinition,
@@ -40,6 +41,8 @@ function buildInitialValues(tool: ToolDefinition): ToolValues {
       values[field.id] = false;
     } else if (field.type === "checkbox-group") {
       values[field.id] = [];
+    } else if (field.type === "textarea") {
+      values[field.id] = "";
     }
   }
 
@@ -90,6 +93,20 @@ function FieldControl({
         label={field.label}
         value={typeof value === "string" ? value : ""}
         options={field.options}
+        help={field.help}
+        onChange={onChange}
+      />
+    );
+  }
+
+  if (field.type === "textarea") {
+    return (
+      <TextareaInput
+        id={field.id}
+        label={field.label}
+        value={typeof value === "string" ? value : ""}
+        rows={field.rows}
+        placeholder={field.placeholder}
         help={field.help}
         onChange={onChange}
       />
