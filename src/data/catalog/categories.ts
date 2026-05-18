@@ -65,4 +65,20 @@ export const categories: AppCategory[] = [
     path: "/category/documents",
     colorTone: "gray",
   },
+  {
+    id: "education",
+    title: "教育・カンファ",
+    description: "症例カンファ・教育コンテンツ",
+    iconLabel: "教",
+    path: "/category/education",
+    colorTone: "purple",
+  },
+  {
+    id: "learning",
+    title: "学習アプリ",
+    description: "研修医向け学習・反復演習",
+    iconLabel: "学",
+    path: "/category/learning",
+    colorTone: "teal",
+  },
 ];
