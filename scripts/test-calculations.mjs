@@ -20,6 +20,20 @@ await writeFile(compiledPath, output.outputText, "utf8");
 
 const calculations = await import(pathToFileURL(compiledPath).href);
 
+const templatesSource = await readFile(
+  path.join(rootDir, "src/utils/textTemplates.ts"),
+  "utf8",
+);
+const templatesOutput = ts.transpileModule(templatesSource, {
+  compilerOptions: {
+    module: ts.ModuleKind.ES2022,
+    target: ts.ScriptTarget.ES2020,
+  },
+});
+const templatesPath = path.join(tmpDir, "textTemplates.mjs");
+await writeFile(templatesPath, templatesOutput.outputText, "utf8");
+const templates = await import(pathToFileURL(templatesPath).href);
+
 function closeTo(actual, expected, tolerance = 0.01) {
   assert.ok(
     Math.abs(actual - expected) <= tolerance,
@@ -87,5 +101,34 @@ assert.deepEqual(
 );
 
 assert.equal(calculations.calculateSteroidEquivalent(10, 5, 20), 40);
+
+const dischargeText = templates.buildDischargeSummary({
+  admissionReason: "発熱精査",
+  primaryDiagnosis: "",
+  comorbidities: "",
+  hospitalCourse: "",
+  treatments: "",
+  dischargeStatus: "",
+  dischargeMedicationPoints: "",
+  futurePlan: "",
+  requests: "",
+  explanation: "",
+});
+assert.ok(dischargeText.includes("【入院理由】\n発熱精査"));
+assert.ok(dischargeText.includes("主診断：（未入力）"));
+
+const referralText = templates.buildReferralReply({
+  referralReason: "精査依頼",
+  assessment: "",
+  diagnosis: "",
+  treatment: "",
+  currentStatus: "",
+  futurePlan: "",
+  requests: "",
+});
+assert.ok(referralText.startsWith("〇〇先生"));
+assert.ok(referralText.includes("【紹介理由】\n精査依頼"));
+assert.ok(referralText.includes("診断：（未入力）"));
+assert.ok(referralText.trimEnd().endsWith("今後とも何卒よろしくお願い申し上げます。"));
 
 console.log("calculation tests passed");
