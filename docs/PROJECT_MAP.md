@@ -13,20 +13,20 @@
 ## 現在の内容
 
 - アプリ名: 総診ワークベンチ / GIM Workbench
-- カテゴリ: 10件（計算、スコア、薬剤、救急、病棟、外来、高齢者、書類・説明、教育・カンファ、学習アプリ）※`education` / `learning` は改修後復活予定
-- 登録ツール: 30件（`src/data/tools.ts` 集約）
+- カテゴリ: 10件（計算、スコア、薬剤、救急、病棟、外来、高齢者、書類・説明、教育・カンファ、学習アプリ）
+- 登録ツール: 32件（`src/data/tools.ts` 集約）
 - バックエンド: なし
 - 外部API: なし
 
-## 改修中の項目（2026-05-17 時点）
+## 改修状況（2026-05-18 時点）
 
-仕様書ベースで Claude Code に依頼する改修が `docs/specs/_cleanup-codex.md` にまとまっています。
+`docs/specs/_cleanup-codex.md` の改修を Claude Code が実施。
 
-- 退院サマリ（`discharge-summary`）・紹介元返書（`referral-reply`）を `tools.ts` に統合し、機能を復元
-- カテゴリ「教育・カンファ」「学習アプリ」を `categories.ts` に追加
-- 既存の孤児ファイル（`src/modules/{ward,calculators,documents}/*.tsx`）7件を削除
-- `src/utils/scoring.ts` と `src/utils/calculations.ts` の重複を `calculations.ts` に1本化
-- `af-risk` ツールを仕様書（`docs/specs/af-risk.md`）通りに改修（先生レビュー後）
+- ✅ 退院サマリ（`discharge-summary`）・紹介元返書（`referral-reply`）を `tools.ts` に統合し機能復元（`ToolField` に `textarea` 追加）
+- ✅ カテゴリ「教育・カンファ」「学習アプリ」を `categories.ts` に追加
+- ✅ 孤児ファイル（`src/modules/{ward,calculators,documents}/*.tsx`）7件を削除
+- ✅ `src/utils/scoring.ts` を削除し計算ロジックを `calculations.ts` に1本化
+- ⏳ `af-risk` ツールの仕様書通り改修（`docs/specs/af-risk.md` が「下書き」のため未着手・先生レビュー待ち）
 
 ## 実装方針
 
@@ -41,8 +41,8 @@
 
 | パス | 役割 |
 | --- | --- |
-| `src/data/tools.ts` | 30ツールの `ToolDefinition` 定義 |
-| `src/data/catalog/categories.ts` | カテゴリ定義（現状8、改修で10） |
+| `src/data/tools.ts` | 32ツールの `ToolDefinition` 定義 |
+| `src/data/catalog/categories.ts` | カテゴリ定義（10件） |
 | `src/data/catalog/index.ts` | `moduleDefinitions = miniToolModules` ブリッジ |
 | `src/data/modules.ts` | 画面側が読む検索・取得API |
 | `src/data/antibioticRenalDosing.ts` | 抗菌薬腎機能用量データ |
@@ -53,14 +53,14 @@
 | `src/types/module.ts` | `AppModule` / `AppCategory` の型 |
 | `src/modules/miniTools/MiniToolRenderer.tsx` | 共通レンダラー |
 | `src/pages/ModulePage.tsx` | `MiniToolRenderer` への薄いラッパ |
-| `src/components/` | 共通UI（NumberInput, SelectInput, ResultCard, DisclaimerBox 等） |
+| `src/components/` | 共通UI（NumberInput, SelectInput, TextareaInput, ResultCard, DisclaimerBox 等） |
 | `src/utils/calculations.ts` | 計算ロジック（純粋関数） |
 | `scripts/test-calculations.mjs` | 計算ロジックの spot check |
 | `portable/gim-workbench.html` | 単一HTML配布物 |
 | `docs/specs/` | ツール仕様書 |
 | `docs/references/` | 参考資料置き場（Git管理外） |
 
-## 実装済みツール一覧（30件）
+## 実装済みツール一覧（32件）
 
 | # | ツールID | 表示名 | 主カテゴリ |
 | --- | --- | --- | --- |
@@ -94,13 +94,8 @@
 | 28 | `urinary-retention` | 尿閉対応チェックリスト | 病棟・救急 |
 | 29 | `anemia-fit` | 便潜血陽性・貧血外来の初期整理 | 外来 |
 | 30 | `transfusion` | 輸血適応チェックツール | 病棟 |
-
-## 改修で追加予定のツール
-
-| ツールID | 表示名 | 主カテゴリ | 状況 |
-| --- | --- | --- | --- |
-| `discharge-summary` | 退院サマリ下書き | 書類・説明・病棟 | 仕様書あり、`tools.ts` 統合待ち |
-| `referral-reply` | 紹介元返書 | 書類・説明・外来 | 仕様書あり、`tools.ts` 統合待ち |
+| 31 | `discharge-summary` | 退院サマリ下書き | 書類・説明・病棟 |
+| 32 | `referral-reply` | 紹介元返書 | 書類・説明・外来 |
 
 ## TODOを残している領域（仕様未確定・施設依存）
 

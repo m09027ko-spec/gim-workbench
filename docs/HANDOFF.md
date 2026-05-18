@@ -3,11 +3,11 @@
 > このファイルの役割: **セッション間の引き継ぎ**。直近に行った作業、決まった方針、次に進める候補を残します。新しいセッションを始める Claude（Cowork または Code）/ Codex は、まず `/AGENTS.md` を読み、その後このファイルで「前回どこまで進んだか」を把握してください。
 > 関連ファイル: 常設ルールは `/AGENTS.md` と `/CLAUDE.md`、現状スナップショットは `docs/PROJECT_MAP.md`、設計判断は `docs/decisions.md`、仕様書は `docs/specs/`。
 
-最終更新: 2026-05-17
+最終更新: 2026-05-18
 
 ## 現在の到達点
 
-既存のReact/Viteアプリ「総診ワークベンチ / GIM Workbench」が、内科臨床で日常的に使える**30ツール構成**になっています。
+既存のReact/Viteアプリ「総診ワークベンチ / GIM Workbench」が、内科臨床で日常的に使える**32ツール構成**になっています。
 
 - バックエンド・外部API・UIライブラリなし
 - HashRouter、通常CSS、`localStorage` 最小利用
@@ -91,6 +91,20 @@ Codex が30個の内科ミニツールを `src/data/tools.ts` に追加。検証
 - `docs/specs/_cleanup-codex.md` を改修指示書として作成
 - `docs/PROJECT_MAP.md` を新状態に更新
 
+### 2026-05-18: Claude Code による Codex 後始末改修（★1〜★4・★6・★7）
+
+`docs/specs/_cleanup-codex.md` の改修を Claude Code が worktree `claude/nice-mendel-7504fe` で実施。★ ごとに別コミット（`[claude-code]`）。
+
+- 作業ブランチに Cowork の未コミット仕様書・更新済みドキュメントを取り込み（`[cowork]` コミット1件）
+- **★1** `ToolField` に `textarea` バリアント追加＋`TextareaInput.tsx` 新設。`discharge-summary` / `referral-reply` を `tools.ts` に `ToolDefinition` として復元（`textTemplates.ts` を再利用）。孤児 `DischargeSummary.tsx` / `ReferralReply.tsx` 削除
+- **★2** カテゴリ `education`（教育・カンファ）/ `learning`（学習アプリ）を `categories.ts` に追加（定義のみ）
+- **★3** 孤児コンポーネント5件（Curb65 / Cha2ds2Vasc / AdmissionChecklist / DischargeChecklist / AspirationPneumonia）を削除
+- **★4** `src/utils/scoring.ts` を削除。両関数は `calculations.ts` の `calculateCha2ds2VascScore` と `pneumonia-severity` のインライン CURB-65 で代替済みのため、呼び出し元のない関数は移植せず1本化
+- **★6** `scripts/test-calculations.mjs` に文書テンプレート出力のスポットチェックを追加
+- **★7** `npm run build` / `npm run build:portable` で `dist/`（Git管理外）と `portable/gim-workbench.html` を再生成
+- **★5** は `docs/specs/af-risk.md` が「下書き」のため未着手（先生レビュー待ち）
+- `npm test` / `npm run build` ともに成功。`docs/PROJECT_MAP.md` を 32ツール・10カテゴリへ更新
+
 ## 次に進めるなら
 
 ### 短期（先生）
@@ -101,15 +115,9 @@ Codex が30個の内科ミニツールを `src/data/tools.ts` に追加。検証
 
 ### 中期（Claude Code に依頼）
 
-`docs/specs/_cleanup-codex.md` の改修項目を順に。優先順:
+`docs/specs/_cleanup-codex.md` の改修項目。★1〜★4・★6・★7 は 2026-05-18 に完了。残:
 
-1. ★1 退院サマリ・紹介元返書を `tools.ts` に統合
-2. ★2 カテゴリ「教育・カンファ」「学習アプリ」を `categories.ts` に追加
-3. ★3 孤児ファイル削除
-4. ★4 `scoring.ts` を `calculations.ts` に1本化
-5. ★5 `af-risk` の改修（**先生レビュー後**）
-6. ★6 テスト追加
-7. ★7 `dist/` 再生成
+- ★5 `af-risk` の改修（**先生レビュー後**）。`docs/specs/af-risk.md` のステータスが「下書き」→「確定」になってから着手。改修内容: 各 checkbox に `help` 追加、`cautions` 完全版置換、修正可能因子（B/L/D）ハイライト、原典2本（Pisters 2010 / Lip 2010）追加
 
 ### 長期（Cowork ↔ 先生）
 
